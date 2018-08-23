@@ -2,7 +2,7 @@ import tensorflow as tf
 import pickle
 import os
 print("Initialization");
-lr=0.09
+lr=0.5
 epochs=500
 batch_size=10
 step=1
@@ -18,16 +18,16 @@ Y_test=Y_Data[split:n];
 
 print("input");
 x=tf.placeholder(tf.float32,[None,len(X_Data[0])]);
-y=tf.placeholder(tf.float32,[None,2]);
+y=tf.placeholder(tf.float32,[None,1]);
 
-W=tf.Variable(tf.zeros([len(X_Data[0]),2]));
-b=tf.Variable(tf.zeros([2]));
+W=tf.Variable(tf.random_normal([len(X_Data[0]),1]),name='W');
+b=tf.Variable(tf.random_normal([1]),name='b');
 
 pred=tf.nn.sigmoid(tf.matmul(x,W)+b);
 delta=pow(10,-9);
 
 cost=tf.reduce_mean(-y*(tf.log(pred+delta))-(1-y)*tf.log(1-pred+delta));
-#cost=tf.reduce_mean(-tf.reduce_mean(y*tf.log(pred)),reduction_indices=1);
+#cost=tf.reduce_mean(-tf.reduce_mean(y*tf.log(pred+delta)));
 
 optimizer=tf.train.GradientDescentOptimizer(learning_rate=lr).minimize(cost);
 
@@ -37,6 +37,9 @@ path='./model/';
 saver=tf.train.Saver();
 
 print("Training Starts");
+
+z=[n.name for n in tf.get_default_graph().as_graph_def().node]
+print(z);
 
 with tf.Session() as sess:
     sess.run(init);
@@ -48,14 +51,16 @@ with tf.Session() as sess:
             batch_x=X_train[i:min(i+batch_size,len(X_train))];
             batch_y=Y_train[i:min(i+batch_size,len(Y_train))];
 
-            _,c=sess.run([optimizer,cost],feed_dict={x:batch_x,y:batch_y});
-            #print(c);
-            avg_cost+=c;
+            p,_,c=sess.run([pred,optimizer,cost],feed_dict={x:batch_x,y:batch_y});
+
+            #print(1 in p);
+
+            avg_cost+=c/batch_size;
 
 
         if ((e+1)%step==0):
             print("Epoch: "+str(e));
-            print("Loss: "+str(avg_cost*batch_size/len(X_train)));
+            print("Loss: "+str((avg_cost*batch_size)/len(X_train)));
 
         if((e+1)%10==0):
             saver.save(sess,os.path.join(path,'model'),global_step=e+1);

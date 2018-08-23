@@ -1,7 +1,10 @@
 import pickle
+import numpy as np
 d={};
 def getData(fileName):
     count=0;
+    c1=0
+    c2=0;
     X=[];
     Y=[];
     print("Hello");
@@ -27,9 +30,13 @@ def getData(fileName):
                 #0 5 9 11 12 13 14
                 X.append(row[0:length-1]);
                 if(row[length-1]==d['no']):
-                    Y.append([0.0,1.0]);
+                    Y.append([0]);
                 else:
-                    Y.append([1.0,0.0]);
+                    Y.append([1]);
+                    for j in range(6):
+                        X.append(row[0:length - 1]);
+                        Y.append([1]);
+
     return X,Y;
 
 
