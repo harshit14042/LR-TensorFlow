@@ -2,9 +2,9 @@ import tensorflow as tf
 import pickle
 import os
 print("Initialization");
-lr=0.5
+lr=0.01
 epochs=500
-batch_size=10
+batch_size=300
 step=1
 
 X_Data=pickle.load(open('X','rb'));

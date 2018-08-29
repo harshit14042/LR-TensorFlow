@@ -1,15 +1,16 @@
 import tensorflow as tf
 import pickle
 import os
+import numpy as np
 print("Initialization");
-lr=0.5
-epochs=500
-batch_size=100
+lr=0.01
+epochs=100
+batch_size=300
 step=1
 
 model_path = "./model/"
-model_name = "model-60"
-model_name_meta = "model-60.meta"
+model_name = "model-500"
+model_name_meta = "model-500.meta"
 
 X_Data=pickle.load(open('X','rb'));
 Y_Data=pickle.load(open('Y','rb'));
@@ -25,8 +26,8 @@ x=tf.placeholder(tf.float32,[None,len(X_Data[0])]);
 y=tf.placeholder(tf.float32,[None,1]);
 sess=tf.Session();
 path='./model/';
-saver = tf.train.import_meta_graph('./model/model-50.meta')
-saver.restore(sess,os.path.join(path,'model-50'))
+saver = tf.train.import_meta_graph('./model/model-500.meta')
+saver.restore(sess,os.path.join(path,'model-500'))
 graph = tf.get_default_graph()
 
 W = graph.get_tensor_by_name("W:0")
@@ -58,18 +59,18 @@ with tf.Session() as sess:
         tot=tot+1
         out = sess.run(pred, feed_dict={x: X_test[i:min(i+batch_size,len(X_test))]});
         l=0;
-        z=(out - Y_test[i:min(i+batch_size,len(X_test))]);
+        z=abs(np.ndarray.round(out) - Y_test[i:min(i+batch_size,len(X_test))]);
         for j in range(len(out)):
             l+=z[j]
 
-        avg+=1-(l/len(out));
+        avg+=(l);
         if(0 in out and 1 in out):
             t=t+1
-            print(out)
+            print(np.ndarray.round(out));
             print(Y_test[i:min(i+batch_size,len(X_test))])
-            print(1 - (l / len(out)));
+            print((l / len(out)));
 
-    avg=avg/tot;
+    avg=avg/len(X_test);
     print(t)
     print(tot)
-    print(avg)
+    print(1-avg)

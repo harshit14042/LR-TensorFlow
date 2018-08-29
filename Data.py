@@ -28,14 +28,25 @@ def getData(fileName):
                             count=count+1;
                             row.append(d[k[1]]);
                 #0 5 9 11 12 13 14
-                X.append(row[0:length-1]);
+                z=row[0:length-1];
+                #X.append(row[0:length-1]);
                 if(row[length-1]==d['no']):
-                    Y.append([0]);
+                    z.append(0);
+                    X.append(z);
                 else:
-                    Y.append([1]);
+                    z.append(1);
+
                     for j in range(6):
-                        X.append(row[0:length - 1]);
-                        Y.append([1]);
+                        X.append(z);
+
+    X1=np.array(X);
+    np.random.shuffle(X1)
+
+    X=[];
+    a=len(X1[0])
+    for i in range(len(X1)):
+        X.append(X1[i][0:a-1])
+        Y.append([X1[i][a-1]])
 
     return X,Y;
 
